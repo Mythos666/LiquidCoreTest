@@ -138,7 +138,7 @@ Java_com_mythos_myapplication_MainActivity_stringFromJNI(
     JSObjectRef globalObject = JSContextGetGlobalObject(globalContext);
     JSObjectRef pointObject = JSObjectMake(globalContext, PointClass(), nullptr);
     JSObjectSetProperty(globalContext, globalObject, JSStringCreateWithUTF8CString("Point"), pointObject, kJSPropertyAttributeNone, nullptr);
-    JSStringRef callStatement = JSStringCreateWithUTF8CString("for(var i = 0; i < 100000; i++) {var p = new Point(100, 100)} 'completed'");
+    JSStringRef callStatement = JSStringCreateWithUTF8CString("for(var i = 0; i < 100000; i++) {let p = new Point(100, 100)} 'completed'");
     JSValueRef result = JSEvaluateScript(globalContext, callStatement, nullptr, nullptr, 1,nullptr);
     JSStringRef resultJSStringRef = JSValueToStringCopy(globalContext, result, nullptr);
     std::string resultString = JSStringToStdString(resultJSStringRef);

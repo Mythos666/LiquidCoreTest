@@ -30,6 +30,9 @@ android {
         }
     }
 }
+configurations {
+    liquidcore {}
+}
 repositories {
     flatDir {
         dirs './libs'
@@ -42,6 +45,28 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation(name:'LiquidCore', ext:'aar') // liquid-core 0.5.1 aar
 
+    liquidcore fileTree(dir: 'libs', include: ['LiquidCore-release.aar'])
+    implementation(name:'LiquidCore-release', ext:'aar')
+}
+
+task extractAddOnLibsAndHeaders(type: Sync) {
+    dependsOn configurations.liquidcore
+
+    from {
+        configurations.liquidcore.collect {zipTree(it)}
+    }
+    include "jni/**/*.so", "include/**/*"
+    into "build/liquidcore-addon"
+}
+afterEvaluate {
+    def addon = file('build/liquidcore-addon')
+    if (!addon.exists()) {
+        if (project.hasProperty("externalNativeBuildDebug")) {
+            externalNativeBuildDebug.dependsOn extractAddOnLibsAndHeaders
+        }
+        if (project.hasProperty("externalNativeBuildRelease")) {
+            externalNativeBuildRelease.dependsOn extractAddOnLibsAndHeaders
+        }
+    }
 }
